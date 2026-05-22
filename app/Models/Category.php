@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 
-#[Fillable(['name', 'email', 'password', 'role'])]
+#[Fillable(['name', 'parent_id', 'product_type_id', 'image', 'is_active'])]
 class Category extends Model
 {
     public function parent()

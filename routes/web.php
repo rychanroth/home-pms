@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\ProductTypeController;
+use App\Http\Controllers\Admin\SupplierController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -22,6 +23,7 @@ Route::middleware('auth')->group(function () {
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::resource('product-types', ProductTypeController::class);
     Route::resource('categories', CategoryController::class);
+    Route::resource('suppliers', SupplierController::class);
 });
 
 

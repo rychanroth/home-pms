@@ -27,7 +27,7 @@ class CategoryController extends Controller
         // Pass data for the dropdowns!
         $productTypes = ProductType::all();
         $allCategories = Category::all();
-        
+
         return view('admin.categories.form', compact('productTypes', 'allCategories'));
     }
 
@@ -83,6 +83,19 @@ class CategoryController extends Controller
             'parent_id' => 'nullable|exists:categories,id',
             'image' => 'nullable|image|max:2048',
         ]);
+
+        // Prevent infinite circular reference
+        if (!empty($validated['parent_id'])) {
+            // 1. Grab the category the user is trying to assign as a parent
+            $proposedParent = Category::find($validated['parent_id']);
+
+            // 2. Ask the PROPOSED PARENT: "Are you a descendant of the category I'm currently editing?"
+            if ($proposedParent->isDescendantOf($category->id)) {
+                return back()
+                    ->withErrors(['parent_id' => 'Circular reference detected! You cannot assign a child category as a parent.'])
+                    ->withInput();
+            }
+        }
 
         if ($request->hasFile('image')) {
             // Optional: Delete old image if replacing it

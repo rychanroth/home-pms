@@ -22,4 +22,28 @@ class Category extends Model
     {
         return $this->belongsTo(ProductType::class);
     }
+
+    /**
+     * Checks if a given category ID is an ancestor (parent, grandparent, etc.) of this category.
+     * Used to prevent infinite circular references.
+     */
+    public function isDescendantOf($targetId): bool
+    {
+        // Start with the current category's parent
+        $ancestor = $this->parent;
+
+        // Keep looking up the tree until we hit the top (null)
+        while (!is_null($ancestor)) {
+            // Did we find the target ID in our family tree?
+            if ($ancestor->id == $targetId) {
+                return true; // YES! This would cause a loop.
+            }
+
+            // Move up one level: great-grandparent -> great-great-grandparent, etc.
+            $ancestor = $ancestor->parent;
+        }
+
+        // We reached the top of the tree and never found the target. Safe!
+        return false;
+    }
 }

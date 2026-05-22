@@ -3,61 +3,80 @@
         <h2 class="text-2xl font-bold mb-6">
             {{ isset($category) ? 'Edit' : 'Create' }} Category
         </h2>
-
-        <form method="POST"
-            action="{{ isset($category) ? route('admin.categories.update', $category) : route('admin.categories.store') }}"
-            enctype="multipart/form-data">
-
+        
+        <form method="POST" 
+        action="{{ isset($category) ? route('admin.categories.update', $category) : route('admin.categories.store') }}" 
+        enctype="multipart/form-data">
+            
             @csrf
             @isset($category) @method('PUT') @endisset
 
-            <!-- Name -->
+            <!-- Name Field -->
             <div class="mb-4">
                 <label class="block text-sm font-medium text-gray-700">Category Name</label>
-                <input type="text" name="name" value="{{ $category->name ?? old('name') }}"
-                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required>
+                <input type="text" name="name" 
+                value="{{ $category->name ?? old('name') }}" 
+                class="mt-1 block w-full rounded-md shadow-sm @error('name') border-red-500 text-red-900 focus:ring-red-500 focus:border-red-500 @else border-gray-300 focus:border-teal-500 focus:ring-teal-500 @enderror" required>
+                
+                @error('name')
+                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                @enderror
             </div>
 
-            <!-- PRODUCT TYPE DROPDOWN -->
+            <!-- Product Type Dropdown -->
             <div class="mb-4">
                 <label class="block text-sm font-medium text-gray-700">Product Type</label>
-                <select name="product_type_id" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                <select name="product_type_id" 
+                        class="mt-1 block w-full rounded-md shadow-sm @error('product_type_id') border-red-500 text-red-900 focus:ring-red-500 focus:border-red-500 @else border-gray-300 focus:border-teal-500 focus:ring-teal-500 @enderror">
                     <option value="">-- Select Type --</option>
                     @foreach($productTypes as $type)
-                    <option value="{{ $type->id }}" {{ ($category->product_type_id ?? old('product_type_id')) == $type->id ? 'selected' : '' }}>
-                        {{ $type->name }}
-                    </option>
+                        <option value="{{ $type->id }}" {{ ($category->product_type_id ?? old('product_type_id')) == $type->id ? 'selected' : '' }}>
+                            {{ $type->name }}
+                        </option>
                     @endforeach
                 </select>
+                
+                @error('product_type_id')
+                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                @enderror
             </div>
 
-            <!-- PARENT CATEGORY DROPDOWN -->
+            <!-- Parent Category Dropdown -->
             <div class="mb-4">
                 <label class="block text-sm font-medium text-gray-700">Parent Category (Optional)</label>
-                <select name="parent_id" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                <select name="parent_id" 
+                        class="mt-1 block w-full rounded-md shadow-sm @error('parent_id') border-red-500 text-red-900 focus:ring-red-500 focus:border-red-500 @else border-gray-300 focus:border-teal-500 focus:ring-teal-500 @enderror">
                     <option value="">-- None (Top Level) --</option>
                     @foreach($allCategories as $cat)
-                    <!-- THE WALL PREVENTION: Don't let a category pick ITSELF as a parent! -->
-                    @if(!isset($category) || $cat->id != $category->id)
-                    <option value="{{ $cat->id }}" {{ ($category->parent_id ?? old('parent_id')) == $cat->id ? 'selected' : '' }}>
-                        {{ $cat->name }}
-                    </option>
-                    @endif
+                        @if(!isset($category) || $cat->id != $category->id)
+                            <option value="{{ $cat->id }}" {{ ($category->parent_id ?? old('parent_id')) == $cat->id ? 'selected' : '' }}>
+                                {{ $cat->name }}
+                            </option>
+                        @endif
                     @endforeach
                 </select>
                 <p class="text-xs text-gray-500 mt-1">Leave as 'None' to make this a main category.</p>
+                
+                @error('parent_id')
+                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                @enderror
             </div>
 
-            <!-- Image -->
+            <!-- Image Field -->
             <div class="mb-4">
                 <label class="block text-sm font-medium text-gray-700">Image</label>
-                <input type="file" name="image" accept="image/*"
-                    class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100">
+                <input type="file" name="image" accept="image/*" 
+                class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100 @error('image') text-red-500 @enderror">
+                
+                @error('image')
+                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                @enderror
+
                 @isset($category->image)
-                <div class="mt-2">
-                    <img src="{{ Storage::url($category->image) }}" class="w-16 h-16 rounded object-cover border">
-                    <p class="text-xs text-gray-500 mt-1">Leave blank to keep current image.</p>
-                </div>
+                    <div class="mt-2">
+                        <img src="{{ Storage::url($category->image) }}" class="w-16 h-16 rounded object-cover border">
+                        <p class="text-xs text-gray-500 mt-1">Leave blank to keep current image.</p>
+                    </div>
                 @endisset
             </div>
 

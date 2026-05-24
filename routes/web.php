@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\ProductTypeController;
 use App\Http\Controllers\Admin\StockInController;
 use App\Http\Controllers\Admin\SupplierController;
+use App\Http\Controllers\Cashier\CartController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -20,6 +21,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
+    Route::post('/cart/remove', [CartController::class, 'remove'])->name('cart.remove');
+    Route::post('/cart/clear', [CartController::class, 'clear'])->name('cart.clear');
 });
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
@@ -27,10 +32,10 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::resource('categories', CategoryController::class);
     Route::resource('suppliers', SupplierController::class);
     Route::resource('products', ProductController::class);
-    
+
     Route::get('/stock-movements', [StockInController::class, 'index'])->name('stock-movements.index');
     Route::get('/stock-movements/create', [StockInController::class, 'create'])->name('stock-movements.create');
-    Route::post('/stock-movements', [StockInController::class, 'store'])->name('stock-movements.store');    
+    Route::post('/stock-movements', [StockInController::class, 'store'])->name('stock-movements.store');
 });
 
 

@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\ProductTypeController;
+use App\Http\Controllers\Admin\StockInController;
 use App\Http\Controllers\Admin\SupplierController;
 
 Route::get('/', function () {
@@ -26,7 +27,11 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::resource('categories', CategoryController::class);
     Route::resource('suppliers', SupplierController::class);
     Route::resource('products', ProductController::class);
+    
+    Route::get('/stock-movements', [StockInController::class, 'index'])->name('stock-movements.index');
+    Route::get('/stock-movements/create', [StockInController::class, 'create'])->name('stock-movements.create');
+    Route::post('/stock-movements', [StockInController::class, 'store'])->name('stock-movements.store');    
 });
 
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

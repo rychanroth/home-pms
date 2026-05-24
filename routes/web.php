@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\ProductTypeController;
 use App\Http\Controllers\Admin\StockInController;
 use App\Http\Controllers\Admin\SupplierController;
 use App\Http\Controllers\Cashier\CartController;
+use App\Http\Controllers\Cashier\PosController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -25,6 +26,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
     Route::post('/cart/remove', [CartController::class, 'remove'])->name('cart.remove');
     Route::post('/cart/clear', [CartController::class, 'clear'])->name('cart.clear');
+
+    Route::get('/pos', [PosController::class, 'index'])->name('pos.index');
 });
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {

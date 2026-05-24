@@ -38,10 +38,20 @@ class CategoryController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'product_type_id' => 'nullable|exists:product_types,id', // Must be a real ID!
-            'parent_id' => 'nullable|exists:categories,id',         // Must be a real ID!
+            'product_type_id' => 'nullable|exists:product_types,id',
+            'parent_id' => 'nullable|exists:categories,id',
             'image' => 'nullable|image|max:2048',
         ]);
+
+        // SERVER-SIDE RULE 1: Child must match Parent's Product Type
+        if (!empty($validated['parent_id']) && !empty($validated['product_type_id'])) {
+            $parent = Category::find($validated['parent_id']);
+            if ($parent->product_type_id != $validated['product_type_id']) {
+                return back()
+                    ->withErrors(['parent_id' => 'The selected parent category belongs to a different Product Type.'])
+                    ->withInput();
+            }
+        }
 
         if ($request->hasFile('image')) {
             $validated['image'] = $request->file('image')->store('categories', 'public');
@@ -96,6 +106,13 @@ class CategoryController extends Controller
                     ->withInput();
             }
         }
+
+        // SERVER-SIDE RULE 1: Child must match Parent's Product Type
+            if (!empty($validated['product_type_id']) && $proposedParent->product_type_id != $validated['product_type_id']) {
+                return back()
+                    ->withErrors(['parent_id' => 'The selected parent category belongs to a different Product Type.'])
+                    ->withInput();
+            }
 
         if ($request->hasFile('image')) {
             // Optional: Delete old image if replacing it

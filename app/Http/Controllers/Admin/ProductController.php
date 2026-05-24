@@ -53,6 +53,16 @@ class ProductController extends Controller
             'suppliers.*' => 'exists:suppliers,id', // Validate every ID in the array is real
         ]);
 
+        // SERVER-SIDE RULE 2: Category must belong to selected Product Type
+        if (!empty($validated['category_id']) && !empty($validated['product_type_id'])) {
+            $category = Category::find($validated['category_id']);
+            if ($category->product_type_id != $validated['product_type_id']) {
+                return back()
+                    ->withErrors(['category_id' => 'The selected category does not belong to the chosen Product Type.'])
+                    ->withInput();
+            }
+        }
+
         if ($request->hasFile('image')) {
             $validated['image'] = $request->file('image')->store('products', 'public');
         }
@@ -109,6 +119,16 @@ class ProductController extends Controller
             'suppliers' => 'nullable|array',
             'suppliers.*' => 'exists:suppliers,id',
         ]);
+
+        // SERVER-SIDE RULE 2: Category must belong to selected Product Type
+        if (!empty($validated['category_id']) && !empty($validated['product_type_id'])) {
+            $category = Category::find($validated['category_id']);
+            if ($category->product_type_id != $validated['product_type_id']) {
+                return back()
+                    ->withErrors(['category_id' => 'The selected category does not belong to the chosen Product Type.'])
+                    ->withInput();
+            }
+        }
 
         if ($request->hasFile('image')) {
             if ($product->image) {

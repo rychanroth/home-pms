@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\StockInController;
 use App\Http\Controllers\Admin\SupplierController;
 use App\Http\Controllers\Cashier\CartController;
 use App\Http\Controllers\Cashier\PosController;
+use App\Http\Controllers\Cashier\CheckoutController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -28,6 +29,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/cart/clear', [CartController::class, 'clear'])->name('cart.clear');
 
     Route::get('/pos', [PosController::class, 'index'])->name('pos.index');
+
+    Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
 });
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {

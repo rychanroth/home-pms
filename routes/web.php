@@ -25,11 +25,11 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
+    Route::get('/pos', [PosController::class, 'index'])->name('pos.index');
+
     Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
     Route::post('/cart/remove', [CartController::class, 'remove'])->name('cart.remove');
     Route::post('/cart/clear', [CartController::class, 'clear'])->name('cart.clear');
-
-    Route::get('/pos', [PosController::class, 'index'])->name('pos.index');
 
     Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
 });

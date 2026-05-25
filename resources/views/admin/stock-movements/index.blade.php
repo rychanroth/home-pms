@@ -35,7 +35,7 @@
                             {{ $movement->product->name }}
                         </td>
                         <td class="px-4 py-3 text-sm text-gray-700">
-                            @if($movement->reason == StockMovementReason::Sale && $movement->sale)
+                            @if($movement->reason == StockMovementReason::Sale && $movement->sale_id)
                             <!-- THE MAGIC BRIDGE -->
                             <a href="{{ route('admin.sales.show', $movement->sale_id) }}"
                                 class="text-blue-600 hover:text-blue-800 underline inline-flex items-center space-x-1">

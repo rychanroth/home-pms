@@ -24,7 +24,7 @@
                                 {{ $sale->sale_number }}
                             </td>
                             <td class="px-6 py-4 text-sm text-gray-700">
-                                {{ $sale->cashier->first_name }} {{ $sale->cashier->last_name }}
+                                {{ $sale->cashier->name }}
                             </td>
                             <td class="px-6 py-4 text-sm text-gray-700">
                                 {{ $sale->payment_method->label() }}

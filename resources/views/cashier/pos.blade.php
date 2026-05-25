@@ -1,11 +1,28 @@
-<x-app-layout>
+<x-app-layout layout="layouts.pos">
     <!-- The Alpine.js Brain -->
-    <div x-data="posApp()" class="h-[calc(100vh-80px)] flex flex-col">
+    <div x-data="posApp()" class="h-screen flex flex-col">
 
         <!-- Top Bar -->
-        <div class="bg-teal-700 text-white px-6 py-3 flex justify-between items-center shadow-md">
-            <h1 class="text-xl font-bold tracking-wide">Point of Sale</h1>
-            <span class="text-teal-200 text-sm">Cashier: {{ auth()->user()->first_name }}</span>
+        <div class="bg-teal-700 text-white px-6 py-2 flex justify-between items-center shadow-md">
+            <h1 class="text-lg font-bold tracking-wide">Point of Sale</h1>
+
+            <div class="hidden md:block">
+                <div class="flex items-center space-x-3">
+                    <div class="w-7 h-7 rounded-full bg-teal-500 flex items-center justify-center text-xs font-bold text-white uppercase">
+                        {{ substr(auth()->user()->username ?? auth()->user()->name, 0, 2) }}
+                    </div>
+                    <div class="leading-tight">
+                        <p class="text-sm font-medium text-white">{{ auth()->user()->name }}</p>
+                        <p class="text-[10px] text-teal-200 uppercase tracking-wider font-semibold">{{ auth()->user()->role }}</p>
+                    </div>
+                    <form method="POST" action="{{ route('logout') }}" class="inline ml-2">
+                        @csrf
+                        <button type="submit" class="text-teal-300 hover:text-white transition-colors flex items-center" title="Logout">
+                            <x-heroicon-o-arrow-right-on-rectangle class="w-4 h-4" />
+                        </button>
+                    </form>
+                </div>
+            </div>
         </div>
 
         <!-- Split Screen Body -->

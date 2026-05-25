@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Scopes\ProductScope;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Casts;
@@ -41,5 +42,14 @@ class Product extends Model
     public function suppliers()
     {
         return $this->belongsToMany(Supplier::class);
+    }
+
+    /**
+     * A bridge to scope class.
+     */
+    public function scopeFilter($query, array $filters)
+    {
+        (new ProductScope)->applyFilters($query, $filters);
+        return $query;
     }
 }

@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
     'product_id',
     'reason',
     'supplier_id',
+    'sale_id',
     'quantity',
     'unit_cost',
     'reference',
@@ -36,6 +37,11 @@ class StockMovement extends Model
     public function supplier()
     {
         return $this->belongsTo(Supplier::class);
+    }
+
+    public function sale()
+    {
+        return $this->belongsTo(Sale::class);
     }
 
     public function creator()

@@ -2,7 +2,7 @@
     
     <!-- Top Section: Logo & Mobile Toggle -->
     <div class="flex items-center justify-between h-16 px-4 bg-slate-900">
-        <a href="{{ route('admin.products.index') }}" class="text-xl font-bold tracking-wider text-teal-400"> <!-- route('admin.dashboard'), this is placeholder -->
+        <a href="{{ route('admin.dashboard') }}" class="text-xl font-bold tracking-wider text-teal-400"> 
             AETERNA
         </a>
         
@@ -17,10 +17,9 @@
         
         <p class="px-2 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Management</p>
         
-        <a href="{{ route('admin.products.index') }}"
+        <a href="{{ route('admin.dashboard') }}"
         class="flex items-center space-x-3 px-2 py-2 rounded-md text-sm transition-colors 
         {{ request()->routeIs('admin.dashboard') ? 'bg-teal-600 text-white' : 'text-slate-300 hover:bg-slate-700 hover:text-white' }}">
-        <!-- route('admin.dashboard'), this is placeholder-->
             <x-heroicon-o-home class="w-5 h-5" />
             <span>Dashboard</span>
         </a>

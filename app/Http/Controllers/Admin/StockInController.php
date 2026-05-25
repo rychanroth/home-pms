@@ -20,8 +20,7 @@ class StockInController extends Controller
 {
     public function index()
     {
-        // Eager load relationships to prevent N+1 queries
-        $movements = StockMovement::with(['product', 'supplier', 'creator'])->latest()->paginate(20);
+        $movements = StockMovement::with(['product', 'supplier', 'creator', 'sale'])->latest()->paginate(20);
         return view('admin.stock-movements.index', compact('movements'));
     }
 

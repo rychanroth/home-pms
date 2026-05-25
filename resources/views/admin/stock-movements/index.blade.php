@@ -7,9 +7,9 @@
         </div>
 
         @if(session('success'))
-            <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4">
-                {{ session('success') }}
-            </div>
+        <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4">
+            {{ session('success') }}
+        </div>
         @endif
 
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
@@ -27,47 +27,56 @@
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
                     @forelse($movements as $movement)
-                        <tr class="hover:bg-gray-50">
-                            <td class="px-4 py-3 text-sm text-gray-700 whitespace-nowrap">
-                                {{ $movement->created_at->format('M d, h:i A') }}
-                            </td>
-                            <td class="px-4 py-3 text-sm font-medium text-gray-900">
-                                {{ $movement->product->name }}
-                            </td>
-                            <td class="px-4 py-3 text-sm text-gray-700">
-                                {{ $movement->reason->label() }}
-                            </td>
-                            
-                            {{-- Color code based on Enum logic --}}
-                            <td class="px-4 py-3 text-sm font-semibold whitespace-nowrap
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-4 py-3 text-sm text-gray-700 whitespace-nowrap">
+                            {{ $movement->created_at->format('M d, h:i A') }}
+                        </td>
+                        <td class="px-4 py-3 text-sm font-medium text-gray-900">
+                            {{ $movement->product->name }}
+                        </td>
+                        <td class="px-4 py-3 text-sm text-gray-700">
+                            @if($movement->reason == StockMovementReason::Sale && $movement->sale)
+                            <!-- THE MAGIC BRIDGE -->
+                            <a href="{{ route('admin.sales.show', $movement->sale_id) }}"
+                                class="text-blue-600 hover:text-blue-800 underline inline-flex items-center space-x-1">
+                                <span>Sale</span>
+                                <x-heroicon-o-arrow-top-right-on-square class="w-3.5 h-3.5" />
+                            </a>
+                            @else
+                            {{ $movement->reason->label() }}
+                            @endif
+                        </td>
+
+                        {{-- Color code based on Enum logic --}}
+                        <td class="px-4 py-3 text-sm font-semibold whitespace-nowrap
                                 @if(in_array($movement->reason, StockMovementReason::inReasons())) 
                                     text-green-600 
                                 @else 
                                     text-red-600 
                                 @endif">
-                                @if(in_array($movement->reason, StockMovementReason::inReasons()))
-                                    +{{ $movement->quantity }}
-                                @else
-                                    -{{ $movement->quantity }}
-                                @endif
-                            </td>
+                            @if(in_array($movement->reason, StockMovementReason::inReasons()))
+                            +{{ $movement->quantity }}
+                            @else
+                            -{{ $movement->quantity }}
+                            @endif
+                        </td>
 
-                            <td class="px-4 py-3 text-sm text-gray-500">
-                                {{ $movement->supplier->name ?? '-' }}
-                            </td>
-                            <td class="px-4 py-3 text-sm text-gray-500">
-                                {{ $movement->reference ?? '-' }}
-                            </td>
-                            <td class="px-4 py-3 text-sm text-gray-500">
-                                {{ $movement->creator->name ?? 'System' }}
-                            </td>
-                        </tr>
+                        <td class="px-4 py-3 text-sm text-gray-500">
+                            {{ $movement->supplier->name ?? '-' }}
+                        </td>
+                        <td class="px-4 py-3 text-sm text-gray-500">
+                            {{ $movement->reference ?? '-' }}
+                        </td>
+                        <td class="px-4 py-3 text-sm text-gray-500">
+                            {{ $movement->creator->name ?? 'System' }}
+                        </td>
+                    </tr>
                     @empty
-                        <tr>
-                            <td colspan="7" class="px-4 py-10 text-center text-gray-500">
-                                No stock movements recorded yet.
-                            </td>
-                        </tr>
+                    <tr>
+                        <td colspan="7" class="px-4 py-10 text-center text-gray-500">
+                            No stock movements recorded yet.
+                        </td>
+                    </tr>
                     @endforelse
                 </tbody>
             </table>

@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\SupplierController;
 use App\Http\Controllers\Cashier\CartController;
 use App\Http\Controllers\Cashier\PosController;
 use App\Http\Controllers\Cashier\CheckoutController;
+use App\Http\Controllers\Admin\SalesController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -42,6 +43,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/stock-movements', [StockInController::class, 'index'])->name('stock-movements.index');
     Route::get('/stock-movements/create', [StockInController::class, 'create'])->name('stock-movements.create');
     Route::post('/stock-movements', [StockInController::class, 'store'])->name('stock-movements.store');
+
+    Route::get('/sales', [SalesController::class, 'index'])->name('sales.index');
+    Route::get('/sales/{sale}', [SalesController::class, 'show'])->name('sales.show');
 });
 
 

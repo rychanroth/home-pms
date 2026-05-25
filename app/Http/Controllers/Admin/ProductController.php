@@ -15,11 +15,25 @@ class ProductController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        // Eager loading!!!
-        $products = Product::with(['category', 'productType', 'suppliers'])->get();
-        return view('admin.products.index', compact('products'));
+        $allowedFilters = [
+            'search',
+            'product_type_id',
+            'category_id',
+            'stock_status',
+            'expiry_status'
+        ];
+
+        $products = Product::with(['category', 'productType', 'suppliers'])
+            ->filter($request->only($allowedFilters))
+            ->latest()
+            ->paginate(15)
+            ->withQueryString();
+        $productTypes = ProductType::all();
+        $categories = Category::all();
+
+        return view('admin.products.index', compact('products', 'productTypes', 'categories'));
     }
 
     /**

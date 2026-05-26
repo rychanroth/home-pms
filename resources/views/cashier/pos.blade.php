@@ -154,15 +154,56 @@
                         <span class="text-3xl font-bold text-teal-700" x-text="'$' + cartTotal().toFixed(2)"></span>
                     </div>
                     <button @click="clearCart()" class="w-full mb-2 bg-gray-200 text-gray-700 py-2 rounded hover:bg-gray-300 font-medium">Clear Cart</button>
-                    <button @click="processCheckout()"
+                    
+                    <!-- The button now just opens the modal -->
+                    <button @click="showConfirmCheckout = true"
                         class="w-full bg-teal-600 text-white py-3 rounded-lg hover:bg-teal-700 font-bold text-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
-                        :disabled="Object.keys(cart).length === 0 || isCheckingOut">
-
-                        <x-heroicon-o-arrow-path x-show="isCheckingOut" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" />
-
-                        <span x-text="isCheckingOut ? 'Processing...' : 'Checkout'"></span>
+                        :disabled="Object.keys(cart).length === 0">
+                        <x-heroicon-o-shopping-cart class="w-5 h-5 mr-2" />
+                        <span>Checkout</span>
                     </button>
+
+                    <!-- THE CONFIRMATION MODAL -->
+                    <div x-show="showConfirmCheckout"
+                        x-transition:enter="transition ease-out duration-200"
+                        x-transition:enter-start="opacity-0"
+                        x-transition:enter-end="opacity-100"
+                        x-transition:leave="transition ease-in duration-150"
+                        x-transition:leave-start="opacity-100"
+                        x-transition:leave-end="opacity-0"
+                        class="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+
+                        <div class="bg-white rounded-xl shadow-2xl p-6 max-w-sm w-full mx-4"
+                            @click.away="showConfirmCheckout = false">
+
+                            <div class="text-center">
+                                <div class="mx-auto flex items-center justify-center h-14 w-14 rounded-full bg-teal-100 mb-4">
+                                    <x-heroicon-o-shopping-bag class="w-8 h-8 text-teal-600" />
+                                </div>
+                                <h3 class="text-lg font-bold text-gray-900 mb-2">Confirm Checkout</h3>
+                                <p class="text-sm text-gray-500 mb-6">You are about to finalize a sale of:</p>
+                                <p class="text-4xl font-bold text-teal-700 mb-8" x-text="'$' + cartTotal().toFixed(2)"></p>
+                            </div>
+
+                            <div class="flex space-x-3">
+                                <button @click="showConfirmCheckout = false" class="flex-1 bg-gray-200 text-gray-700 py-2.5 rounded-lg font-medium hover:bg-gray-300">
+                                    Cancel
+                                </button>
+                                <!-- The real processing happens here -->
+                                <button @click="processCheckout()"
+                                    :disabled="isCheckingOut"
+                                    class="flex-1 bg-teal-600 text-white py-2.5 rounded-lg font-bold hover:bg-teal-700 disabled:opacity-50 flex items-center justify-center">
+                                    <svg x-show="isCheckingOut" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                    <span x-text="isCheckingOut ? 'Processing...' : 'Confirm'" />
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+
             </div>
         </div>
 

@@ -1,3 +1,4 @@
+@use(App\Enums\PaymentMethod)
 <x-app-layout layout="layouts.pos">
     <!-- The Alpine.js Brain -->
     <div x-data="posApp()" class="h-screen flex flex-col">
@@ -180,15 +181,21 @@
 
                         <div class="bg-white rounded-xl shadow-2xl p-6 max-w-sm w-full mx-4"
                             @click.away="showConfirmCheckout = false">
-
-                            <div class="text-center">
-                                <div class="mx-auto flex items-center justify-center h-14 w-14 rounded-full bg-teal-100 mb-4">
-                                    <x-heroicon-o-shopping-bag class="w-8 h-8 text-teal-600" />
-                                </div>
-                                <h3 class="text-lg font-bold text-gray-900 mb-2">Confirm Checkout</h3>
-                                <p class="text-sm text-gray-500 mb-6">You are about to finalize a sale of:</p>
-                                <p class="text-4xl font-bold text-teal-700 mb-8" x-text="'$' + cartTotal().toFixed(2)"></p>
+                            <div class="mx-auto flex items-center justify-center h-14 w-14 rounded-full bg-teal-100 mb-4">
+                                <x-heroicon-o-shopping-bag class="w-8 h-8 text-teal-600" />
                             </div>
+
+                            <!-- Inside the Confirmation Modal -->
+                            <p class="text-sm text-gray-500 mb-4">Select payment method and finalize:</p>
+
+                            <!-- Payment Method DROPDOWN -->
+                            <select x-model="selectedPayment" class="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm mb-4 focus:ring-teal-500 focus:border-teal-500">
+                                @foreach(PaymentMethod::cases() as $method)
+                                <option value="{{ $method->value }}">{{ $method->label() }}</option>
+                                @endforeach
+                            </select>
+
+                            <p class="text-4xl font-bold text-teal-700 mb-8" x-text="'$' + cartTotal().toFixed(2)"></p>
 
                             <div class="flex space-x-3">
                                 <button @click="showConfirmCheckout = false" class="flex-1 bg-gray-200 text-gray-700 py-2.5 rounded-lg font-medium hover:bg-gray-300">
@@ -236,6 +243,9 @@
                                                 <p class="font-mono text-sm font-bold text-teal-700" x-text="sale.sale_number"></p>
                                                 <p class="text-xs text-gray-500 mt-1" x-text="new Date(sale.created_at).toLocaleString()"></p>
                                             </div>
+
+                                            <p class="text-sm text-gray-500 font-medium" x-text="paymentLabels[sale.payment_method] || sale.payment_method"></p>
+
                                             <span class="text-lg font-bold text-gray-900" x-text="'$' + parseFloat(sale.total_amount).toFixed(2)"></span>
                                         </div>
                                     </template>
@@ -270,6 +280,7 @@
                 search: '',
                 cart: @js(session('cart', [])),
                 products: @js($products),
+                paymentLabels: @js(PaymentMethod::options()),
 
                 // New state variables
                 isCheckingOut: false,
@@ -277,6 +288,7 @@
                 lastSaleNumber: '',
 
                 selectedProduct: null, // Holds the product object for the drawer
+                selectedPayment: '{{ PaymentMethod::Cash->value }}', // Default to cash
                 showConfirmCheckout: false, // Toggles the checkout modal
                 showMySales: false, // Toggles the sales history modal
                 mySales: [], // Holds the fetched sales data
@@ -395,7 +407,7 @@
                                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                             },
                             body: JSON.stringify({
-                                payment_method: 'cash' // Hardcoded for MVP as per proposal
+                                payment_method: this.selectedPayment
                             })
                         })
                         .then(response => response.json())

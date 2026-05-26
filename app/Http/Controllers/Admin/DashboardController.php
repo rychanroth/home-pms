@@ -6,11 +6,42 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\Sale;
+use App\Models\SaleItem;
 
 class DashboardController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        // Default to current month if no dates provided
+        $startDate = $request->start_date ? now()->parse($request->start_date)->startOfDay() : now()->startOfMonth();
+        $endDate = $request->end_date ? now()->parse($request->end_date)->endOfDay() : now()->endOfDay();
+
+        // 1. Sales & Estimated Profit in Period
+        $salesInPeriod = Sale::whereBetween('created_at', [$startDate, $endDate])
+            ->with('items.product', 'items.stockMovement') // Eager load for profit calc
+            ->get();
+
+        $totalRevenue = $salesInPeriod->sum('total_amount');
+
+        $estimatedProfit = 0;
+        foreach ($salesInPeriod as $sale) {
+            foreach ($sale->items as $item) {
+                // Use the cost price recorded at the time of the sale movement
+                $costPrice = $item->stockMovement->unit_cost ?? 0;
+                $margin = ($item->unit_price - $costPrice) * $item->quantity;
+                $estimatedProfit += $margin;
+            }
+        }
+
+        // 2. Top 5 Most Sold Products (All time for simplicity, can be filtered to period too)
+        $topProducts = SaleItem::selectRaw('product_id, SUM(quantity) as total_sold')
+            ->groupBy('product_id')
+            ->orderByDesc('total_sold')
+            ->take(5)
+            ->with('product')
+            ->get();
+
+
         // 1. Today's Sales Total
         $todaySales = Sale::whereDate('created_at', today())
             ->sum('total_amount');
@@ -45,6 +76,11 @@ class DashboardController extends Controller
             ->get();
 
         return view('admin.dashboard', compact(
+            'totalRevenue',
+            'estimatedProfit',
+            'startDate',
+            'endDate',
+            'topProducts',
             'todaySales',
             'totalProducts',
             'lowStockCount',

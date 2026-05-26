@@ -28,4 +28,10 @@ class SaleItem extends Model
     {
         return $this->belongsTo(Product::class);
     }
+
+    public function stockMovement()
+    {
+        return $this->hasOne(StockMovement::class, 'sale_id', 'sale_id')
+            ->whereColumn('product_id', 'product_id');
+    }
 }

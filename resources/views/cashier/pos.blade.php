@@ -401,28 +401,41 @@
                         .then(response => response.json())
                         .then(data => {
                             this.isCheckingOut = false;
+                            this.showConfirmCheckout = false;
 
                             if (data.error) {
                                 alert(data.error);
                                 return;
                             }
 
-                            // Success!
-                            this.lastSaleNumber = data.sale_number;
-                            this.showSuccess = true;
+                            if (data.success) {
+                                this.lastSaleNumber = data.sale_number;
+                                this.showSuccess = true;
 
-                            // Clear the local Alpine cart (Session was already cleared by server)
-                            this.cart = {};
+                                // 1. Update stock in the UI grid instantly!
+                                for (const [id, item] of Object.entries(this.cart)) {
+                                    let product = this.products.find(p => p.id == id);
+                                    if (product) {
+                                        product.stock_quantity -= item.qty;
+                                    }
+                                }
 
-                            // Hide success popup after 4 seconds
-                            setTimeout(() => {
-                                this.showSuccess = false;
-                            }, 4000);
+                                // 2. Clear the local Alpine cart
+                                this.cart = {};
+
+                                // 3. Force My Sales to refresh next time they open it
+                                this.mySales = [];
+
+                                setTimeout(() => {
+                                    this.showSuccess = false;
+                                }, 4000);
+                            }
                         })
                         .catch(error => {
                             this.isCheckingOut = false;
                             alert('Network error. Please check connection.');
                         });
+
                 },
 
                 fetchMySales() {

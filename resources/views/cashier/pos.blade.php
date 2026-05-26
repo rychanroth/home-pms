@@ -260,19 +260,104 @@
             </div>
         </div>
 
+        <!-- Hidden Receipt Content -->
+        <div class="thermal-receipt hidden" id="thermal-receipt">
+            <div class="text-center mb-2">
+                <p class="font-bold text-base">@php echo \App\Models\SiteSetting::get('site_name', 'Pharmacy'); @endphp</p>
+                <p class="text-xs">---</p>
+            </div>
+
+            <div class="divider"></div>
+
+            <p class="text-xs">Date: <span id="receipt-date"></span></p>
+            <p class="text-xs">Receipt #: <span id="receipt-number" class="font-bold"></span></p>
+
+            <p class="text-xs">Cashier: {{ auth()->user()->name }}</p>
+
+            <div class="divider"></div>
+
+            <div class="divider"></div>
+
+            <table style="width: 100%; font-size: 11px;">
+                <thead>
+                    <tr style="border-bottom: 1px solid #000;">
+                        <th style="text-align:left;">Item</th>
+                        <th style="text-align:center;">Qty</th>
+                        <th style="text-align:right;">Total</th>
+                    </tr>
+                </thead>
+                <tbody id="receipt-items">
+                    <!-- Populated by JS -->
+                </tbody>
+            </table>
+
+            <div class="divider"></div>
+
+            <div style="text-align: right; font-size: 16px; font-weight: bold;">
+                TOTAL: $<span id="receipt-total"></span>
+            </div>
+
+            <div class="divider"></div>
+            <p class="text-center text-xs">Thank you for your purchase!</p>
+        </div>
+
+        <!-- The Success UI -->
         <div x-show="showSuccess"
             x-transition:enter="transition ease-out duration-300"
             x-transition:enter-start="opacity-0 translate-y-4"
             x-transition:enter-end="opacity-100 translate-y-0"
-            class="fixed bottom-6 right-6 bg-green-500 text-white px-6 py-4 rounded-lg shadow-xl flex items-center space-x-3 z-50"
-            style="display: none;"> <x-heroicon-o-check-circle class="w-6 h-6 flex-shrink-0" />
-
-            <div>
-                <p class="font-bold">Sale Completed!</p>
-                <p class="text-sm text-green-100" x-text="'Receipt #: ' + lastSaleNumber"></p>
+            class="fixed bottom-6 right-6 bg-green-500 text-white px-6 py-4 rounded-lg shadow-xl z-50">
+            <div class="flex items-center space-x-4">
+                <div>
+                    <p class="font-bold">Sale Completed!</p>
+                    <p class="text-sm text-green-100" x-text="'Receipt #: ' + lastSaleNumber"></p>
+                </div>
+                <button @click="printReceipt()" class="bg-green-600 hover:bg-green-700 px-3 py-2 rounded text-sm font-bold flex items-center space-x-1">
+                    <x-heroicon-o-printer class="w-4 h-4" />
+                    <span>Print</span>
+                </button>
             </div>
         </div>
     </div>
+
+    <style>
+        /* Thermal Paper Styling */
+        .thermal-receipt {
+            width: 300px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 12px;
+            line-height: 1.4;
+            color: #000;
+            background: #fff;
+            padding: 20px;
+        }
+
+        .thermal-receipt .divider {
+            border-top: 1px dashed #000;
+            margin: 10px 0;
+        }
+
+        /* THE PRINT MAGIC: Hide everything EXCEPT the receipt when printing */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+
+            .thermal-receipt,
+            .thermal-receipt * {
+                visibility: visible;
+            }
+
+            .thermal-receipt {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                padding: 0;
+                margin: 0;
+            }
+        }
+    </style>
 
     <script>
         function posApp() {
@@ -422,6 +507,9 @@
 
                             if (data.success) {
                                 this.lastSaleNumber = data.sale_number;
+                                this.lastCartSnapshot = {
+                                    ...this.cart
+                                };
                                 this.showSuccess = true;
 
                                 // 1. Update stock in the UI grid instantly!
@@ -438,9 +526,6 @@
                                 // 3. Force My Sales to refresh next time they open it
                                 this.mySales = [];
 
-                                setTimeout(() => {
-                                    this.showSuccess = false;
-                                }, 4000);
                             }
                         })
                         .catch(error => {
@@ -460,6 +545,44 @@
                                 this.mySales = data;
                             });
                     }
+                },
+
+                printReceipt() {
+                    // 1. Calculate the total from the SNAPSHOT, not the live (empty) cart!
+                    let snapshotTotal = Object.values(this.lastCartSnapshot).reduce((total, item) => {
+                        return total + (item.price * item.qty);
+                    }, 0);
+
+                    // 2. Fill in the header info
+                    document.getElementById('receipt-date').innerText = new Date().toLocaleString();
+                    document.getElementById('receipt-number').innerText = this.lastSaleNumber;
+
+                    // FIXED: Use the manually calculated snapshot total
+                    document.getElementById('receipt-total').innerText = snapshotTotal.toFixed(2);
+
+                    // 3. Build the table rows from the cart snapshot
+                    let itemsHtml = '';
+                    for (const [id, item] of Object.entries(this.lastCartSnapshot)) {
+                        itemsHtml += `
+            <tr>
+                <td style="max-width: 120px; overflow: hidden; white-space: nowrap;">${item.name}</td>
+                <td style="text-align:center;">${item.qty}</td>
+                <td style="text-align:right;">$${(item.price * item.qty).toFixed(2)}</td>
+            </tr>
+        `;
+                    }
+                    document.getElementById('receipt-items').innerHTML = itemsHtml;
+
+                    // 4. Unhide the receipt div temporarily, print, then hide again
+                    const receipt = document.getElementById('thermal-receipt');
+                    receipt.classList.remove('hidden');
+
+                    window.print();
+
+                    // Hide it again after printing so it doesn't clutter the DOM
+                    setTimeout(() => {
+                        receipt.classList.add('hidden');
+                    }, 500);
                 }
 
             }

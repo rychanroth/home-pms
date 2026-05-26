@@ -21,6 +21,11 @@
                             <x-heroicon-o-arrow-right-on-rectangle class="w-4 h-4" />
                         </button>
                     </form>
+                    <!-- This button opens Sales History Modal -->
+                    <button @click="fetchMySales()" class="flex items-center space-x-1 text-teal-200 hover:text-white transition">
+                        <x-heroicon-o-clock class="w-5 h-5" />
+                        <span class="text-sm font-medium">My History</span>
+                    </button>
                 </div>
             </div>
         </div>
@@ -154,8 +159,8 @@
                         <span class="text-3xl font-bold text-teal-700" x-text="'$' + cartTotal().toFixed(2)"></span>
                     </div>
                     <button @click="clearCart()" class="w-full mb-2 bg-gray-200 text-gray-700 py-2 rounded hover:bg-gray-300 font-medium">Clear Cart</button>
-                    
-                    <!-- The button now just opens the modal -->
+
+                    <!-- This button opens Confirmation Modal -->
                     <button @click="showConfirmCheckout = true"
                         class="w-full bg-teal-600 text-white py-3 rounded-lg hover:bg-teal-700 font-bold text-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
                         :disabled="Object.keys(cart).length === 0">
@@ -199,6 +204,44 @@
                                     </svg>
                                     <span x-text="isCheckingOut ? 'Processing...' : 'Confirm'" />
                                 </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- MY SALES HISTORY MODAL -->
+                    <div x-show="showMySales"
+                        x-transition:enter="transition ease-out duration-200"
+                        x-transition:enter-start="opacity-0"
+                        x-transition:enter-end="opacity-100"
+                        x-transition:leave="transition ease-in duration-150"
+                        x-transition:leave-start="opacity-100"
+                        x-transition:leave-end="opacity-0"
+                        class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+
+                        <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[80vh] flex flex-col"
+                            @click.away="showMySales = false">
+
+                            <div class="p-6 border-b flex justify-between items-center">
+                                <h3 class="text-lg font-bold text-gray-900">My Recent Sales</h3>
+                                <button @click="showMySales = false" class="text-gray-400 hover:text-gray-600">
+                                    <x-heroicon-o-x-mark class="w-6 h-6" />
+                                </button>
+                            </div>
+
+                            <div class="flex-1 overflow-y-auto p-6">
+                                <div class="space-y-3">
+                                    <template x-for="sale in mySales" :key="sale.id">
+                                        <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-100">
+                                            <div>
+                                                <p class="font-mono text-sm font-bold text-teal-700" x-text="sale.sale_number"></p>
+                                                <p class="text-xs text-gray-500 mt-1" x-text="new Date(sale.created_at).toLocaleString()"></p>
+                                            </div>
+                                            <span class="text-lg font-bold text-gray-900" x-text="'$' + parseFloat(sale.total_amount).toFixed(2)"></span>
+                                        </div>
+                                    </template>
+
+                                    <p x-show="mySales.length === 0" class="text-center text-gray-500 py-8">No sales recorded yet.</p>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -376,6 +419,18 @@
                             this.isCheckingOut = false;
                             alert('Network error. Please check connection.');
                         });
+                },
+
+                fetchMySales() {
+                    this.showMySales = true;
+                    // Only fetch from server if we haven't already, to save bandwidth
+                    if (this.mySales.length === 0) {
+                        fetch('/pos/my-sales')
+                            .then(response => response.json())
+                            .then(data => {
+                                this.mySales = data;
+                            });
+                    }
                 }
 
             }

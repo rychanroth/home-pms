@@ -62,6 +62,17 @@
                         </select>
                     </div>
 
+                    <!-- Expiry Status -->
+                    <div>
+                        <label class="block text-xs font-medium text-gray-500 mb-1">Expiry</label>
+                        <select name="expiry_status" class="w-full rounded-md border-gray-300 shadow-sm text-sm">
+                            <option value="">Any Expiry</option>
+                            <option value="expired" {{ request('expiry_status') == 'expired' ? 'selected' : '' }}>Expired</option>
+                            <option value="expiring_soon" {{ request('expiry_status') == 'expiring_soon' ? 'selected' : '' }}>Expiring Soon (30d)</option>
+                            <option value="no_expiry" {{ request('expiry_status') == 'no_expiry' ? 'selected' : '' }}>No Expiry Date</option>
+                        </select>
+                    </div>
+
                     <!-- Buttons -->
                     <div class="flex space-x-2">
                         <button type="submit" class="flex-1 bg-teal-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-teal-700 flex items-center justify-center space-x-1">

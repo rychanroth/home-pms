@@ -49,6 +49,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::resource('product-types', ProductTypeController::class);
     Route::resource('categories', CategoryController::class);
     Route::resource('suppliers', SupplierController::class);
+
+    Route::patch('/products/{product}/toggle-active', [ProductController::class, 'toggleActive'])->name('products.toggle-active');
     Route::resource('products', ProductController::class);
 
     Route::get('/stock-movements', [StockInController::class, 'index'])->name('stock-movements.index');

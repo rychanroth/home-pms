@@ -169,4 +169,15 @@ class ProductController extends Controller
         $product->delete();
         return redirect()->route('admin.products.index')->with('success', 'Product deleted!');
     }
+
+    /**
+     * Toggle the is_active on/off on product.
+     */
+    public function toggleActive(Product $product)
+    {
+        $product->update(['is_active' => !$product->is_active]);
+
+        $status = $product->is_active ? 'activated' : 'deactivated';
+        return response()->json(['message' => "Product {$status} successfully."]);
+    }
 }

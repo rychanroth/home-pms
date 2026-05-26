@@ -93,7 +93,7 @@
                     @forelse($products as $product)
                     <tr class="hover:bg-gray-50">
                         <!-- Image -->
-                        <td class="px-6 py-4">
+                        <td class="px-3 py-4">
                             @if($product->image)
                             <img src="{{ Storage::url($product->image) }}" class="w-10 h-10 rounded object-cover">
                             @else
@@ -102,7 +102,7 @@
                         </td>
 
                         <!-- Name & Suppliers -->
-                        <td class="px-6 py-4">
+                        <td class="px-3 py-4">
                             <div class="font-medium text-gray-900">{{ $product->name }}</div>
                             <div class="text-xs text-gray-500">
                                 {{ $product->suppliers->count() }} Supplier(s)
@@ -110,7 +110,7 @@
                         </td>
 
                         <!-- Category -->
-                        <td class="px-6 py-4 text-sm text-gray-700">
+                        <td class="px-3 py-4 text-sm text-gray-700">
                             {{ $product->category->name ?? '-' }}
                         </td>
 
@@ -125,7 +125,7 @@
                         </td>
 
                         <!-- Stock with Low Stock Warning -->
-                        <td class="px-6 py-4 text-sm">
+                        <td class="px-2 py-4 text-sm">
                             @if($product->stock_quantity <= 5 && $product->stock_quantity > 0)
                                 <span class="font-semibold text-orange-600">{{ $product->stock_quantity }} {{ $product->base_unit }}s</span>
                                 @elseif($product->stock_quantity == 0)
@@ -136,7 +136,7 @@
                         </td>
 
                         <!-- Expiration with Expired Warning -->
-                        <td class="px-6 py-4 text-sm">
+                        <td class="px-2 py-4 text-sm">
                             @if($product->expiration_date && $product->expiration_date->isPast())
                             <span class="font-semibold text-red-600">
                                 {{ $product->expiration_date->format('M d, Y') }} (Expired)
@@ -151,7 +151,16 @@
                         </td>
 
                         <!-- Actions -->
-                        <td class="px-6 py-4 text-right space-x-2">
+                        <td class="py-4 justify-end items-center space-x-2">
+                            <!-- TOGGLE BUTTON -->
+                            <button x-data="productToggler({{ $product->is_active ? 'true' : 'false' }}, '{{ route('admin.products.toggle-active', $product) }}')"
+                                @click="toggle()"
+                                :class="isActive ? 'bg-green-100 text-green-700 hover:bg-green-200' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'"
+                                class="px-2 py-1 rounded text-xs font-medium transition-colors"
+                                :disabled="isLoading">
+                                <span x-text="isLoading ? '...' : (isActive ? 'Active' : 'Inactive')"></span>
+                            </button>
+
                             <a href="{{ route('admin.products.edit', $product) }}"
                                 class="text-indigo-600 hover:text-indigo-900 font-medium text-sm">Edit</a>
 
@@ -176,4 +185,41 @@
             </table>
         </div>
     </div>
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('productToggler', (initialState, endpointUrl) => ({
+                // 1. Component Scope States
+                isActive: initialState,
+                isLoading: false,
+
+                // 2. Component Methods
+                toggle() {
+                    this.isLoading = true;
+
+                    fetch(endpointUrl, {
+                            method: 'PATCH',
+                            headers: {
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json'
+                            }
+                        })
+                        .then(response => {
+                            if (!response.ok) throw new Error();
+                            return response.json();
+                        })
+                        .then(data => {
+                            this.isActive = !this.isActive;
+                            alert(data.message || 'Status updated successfully!');
+                        })
+                        .catch(() => {
+                            alert('Error updating product status.');
+                        })
+                        .finally(() => {
+                            this.isLoading = false;
+                        });
+                }
+            }));
+        });
+    </script>
 </x-app-layout>

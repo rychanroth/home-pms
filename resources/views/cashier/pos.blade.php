@@ -29,7 +29,7 @@
         <div class="flex-1 grid grid-cols-5 divide-x divide-gray-200 overflow-hidden">
 
             <!-- LEFT SIDE: Product Grid (Takes up 3/5 space) -->
-            <div class="col-span-3 p-4 bg-gray-50 overflow-y-auto">
+            <div class="col-span-3 p-4 bg-gray-50 overflow-y-auto relative">
                 <!-- Search Bar -->
                 <input type="text" x-model="search"
                     placeholder="Search products by name..."
@@ -39,10 +39,15 @@
                 <div class="grid grid-cols-3 gap-3">
                     <!-- Alpine loop: filter products based on search input -->
                     <template x-for="product in filteredProducts()" :key="product.id">
-                        <button @click="addToCart(product)"
-                            class="bg-white p-3 rounded-lg border border-gray-200 hover:border-teal-500 hover:shadow-md transition-all text-left flex flex-col justify-between h-28">
+                        <button @click="selectedProduct = product"
+                            :class="!product.is_active ? 'opacity-50 cursor-not-allowed bg-gray-200' : 'bg-white hover:border-teal-500 hover:shadow-md cursor-pointer'"
+                            class="p-3 rounded-lg border border-gray-200 transition-all text-left flex flex-col justify-between h-28">
                             <div>
-                                <p class="font-semibold text-sm text-gray-800 truncate" x-text="product.name"></p>
+                                <div class="flex justify-between items-start">
+                                    <p class="font-semibold text-sm text-gray-800 truncate" x-text="product.name"></p>
+                                    <!-- Badge if inactive -->
+                                    <span x-show="!product.is_active" class="text-[10px] font-bold text-red-600 bg-red-100 px-1 rounded">OFF</span>
+                                </div>
                                 <p class="text-xs text-gray-500 truncate" x-text="product.base_unit"></p>
                             </div>
                             <p class="text-teal-700 font-bold mt-2" x-text="'$' + parseFloat(product.selling_price).toFixed(2)"></p>
@@ -53,6 +58,50 @@
                     <p x-show="filteredProducts().length === 0" class="col-span-3 text-center text-gray-500 py-10">
                         No products found.
                     </p>
+                </div>
+
+                <!-- PRODUCT INFO DRAWER -->
+                <div x-show="selectedProduct"
+                    x-transition:enter="transition ease-out duration-300"
+                    x-transition:enter-start="opacity-0 -translate-x-full"
+                    x-transition:enter-end="opacity-100 translate-x-0"
+                    x-transition:leave="transition ease-in duration-200"
+                    x-transition:leave-start="opacity-100 translate-x-0"
+                    x-transition:leave-end="opacity-0 -translate-x-full"
+                    class="absolute inset-0 z-20 bg-white shadow-2xl p-6 overflow-y-auto flex flex-col">
+
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-xl font-bold text-gray-800">Product Details</h2>
+                        <button @click="selectedProduct = null" class="text-gray-400 hover:text-gray-600">
+                            <x-heroicon-o-x-mark class="w-6 h-6" />
+                        </button>
+                    </div>
+
+                    <template x-if="selectedProduct">
+                        <div class="flex-1">
+                            <img :src="selectedProduct.image ? '/storage/' + selectedProduct.image : 'https://via.placeholder.com/400'" class="w-full h-48 object-cover rounded-lg mb-4 bg-gray-100">
+
+                            <h3 class="text-2xl font-bold text-gray-900" x-text="selectedProduct.name"></h3>
+                            <p class="text-sm text-gray-500 mb-4" x-text="selectedProduct.description || 'No description provided.'"></p>
+
+                            <div class="grid grid-cols-2 gap-4 mb-6">
+                                <div class="bg-gray-50 p-3 rounded">
+                                    <p class="text-xs text-gray-500">Price</p>
+                                    <p class="text-lg font-bold text-teal-700" x-text="'$' + parseFloat(selectedProduct.selling_price).toFixed(2)"></p>
+                                </div>
+                                <div class="bg-gray-50 p-3 rounded">
+                                    <p class="text-xs text-gray-500">In Stock</p>
+                                    <p class="text-lg font-bold" :class="selectedProduct.stock_quantity <= 5 ? 'text-red-600' : 'text-gray-900'" x-text="selectedProduct.stock_quantity + ' ' + selectedProduct.base_unit + 's'"></p>
+                                </div>
+                            </div>
+
+                            <button @click="addToCart(selectedProduct); selectedProduct = null;"
+                                :disabled="!selectedProduct.is_active"
+                                class="w-full bg-teal-600 text-white py-3 rounded-lg font-bold hover:bg-teal-700 disabled:bg-gray-400 disabled:cursor-not-allowed">
+                                Add to Cart
+                            </button>
+                        </div>
+                    </template>
                 </div>
             </div>
 
@@ -143,6 +192,11 @@
                 showSuccess: false,
                 lastSaleNumber: '',
 
+                selectedProduct: null, // Holds the product object for the drawer
+                showConfirmCheckout: false, // Toggles the checkout modal
+                showMySales: false, // Toggles the sales history modal
+                mySales: [], // Holds the fetched sales data
+
                 filteredProducts() {
                     if (!this.search) return this.products;
                     return this.products.filter(p =>
@@ -151,6 +205,10 @@
                 },
 
                 addToCart(product) {
+                    if (!product.is_active) {
+                        alert('This product is currently deactivated by admin.');
+                        return;
+                    }
                     // Send AJAX request to our CartController
                     fetch('/cart/add', {
                             method: 'POST',

@@ -19,7 +19,7 @@
         <a href="{{ route('admin.dashboard') }}" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-300">Reset</a>
     </form>
 
-    <div class="w-full h-2 mt-2 mb-2 bg-gray-200"></div>
+    <div class="w-full h-1 mt-2 mb-4 bg-gray-200"></div>
 
     <div class="grid grid-cols-2 gap-4 mb-4">
         <!-- Estimated Profit Card -->

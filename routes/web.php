@@ -13,6 +13,7 @@ use App\Http\Controllers\Cashier\CheckoutController;
 use App\Http\Controllers\Admin\SalesController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\SettingController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -45,6 +46,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::resource('users', UserController::class)->except(['show']);
+
+    Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
+    Route::post('/settings', [SettingController::class, 'update'])->name('settings.update');
 
     Route::resource('product-types', ProductTypeController::class);
     Route::resource('categories', CategoryController::class);

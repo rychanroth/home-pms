@@ -2,8 +2,14 @@
 
     <!-- Top Section: Logo & Mobile Toggle -->
     <div class="flex items-center justify-between h-16 px-4 bg-slate-900">
-        <a href="{{ route('admin.dashboard') }}" class="text-xl font-bold tracking-wider text-teal-400">
+        <!-- LOGO -->
+        <a href="{{ route('admin.dashboard') }}" class="text-xl font-bold tracking-wider text-teal-400 flex items-center space-x-2">
+            @php $logo = \App\Models\SiteSetting::get('site_logo'); @endphp
+            @if($logo)
+            <img src="{{ Storage::url($logo) }}" class="h-8 w-20">
+            @else
             AETERNA
+            @endif
         </a>
 
         <!-- Mobile Hamburger -->
@@ -29,6 +35,13 @@
         {{ request()->routeIs('admin.users.*') ? 'bg-teal-600 text-white' : 'text-slate-300 hover:bg-slate-700 hover:text-white' }}">
             <x-heroicon-o-user class="w-5 h-5" />
             <span>Users</span>
+        </a>
+
+        <a href="{{ route('admin.settings.index') }}"
+            class="flex items-center space-x-3 px-2 py-2 rounded-md text-sm transition-colors 
+        {{ request()->routeIs('admin.settings.*') ? 'bg-teal-600 text-white' : 'text-slate-300 hover:bg-slate-700 hover:text-white' }}">
+            <x-heroicon-o-wrench-screwdriver class="w-5 h-5" />
+            <span>Settings</span>
         </a>
 
         <a href="{{ route('admin.product-types.index') }}"

@@ -289,6 +289,10 @@
                 },
 
                 addToCart(product) {
+                    if (product.expiration_date && new Date(product.expiration_date) < new Date()) {
+                        alert('Cannot sell expired products.');
+                        return;
+                    }
                     if (!product.is_active) {
                         alert('This product is currently deactivated by admin.');
                         return;

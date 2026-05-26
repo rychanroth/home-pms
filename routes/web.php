@@ -44,7 +44,7 @@ Route::middleware('auth')->group(function () {
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
-    Route::resource('users', UserController::class)->only(['index', 'destroy']);
+    Route::resource('users', UserController::class)->except(['show']);
 
     Route::resource('product-types', ProductTypeController::class);
     Route::resource('categories', CategoryController::class);

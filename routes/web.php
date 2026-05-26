@@ -12,6 +12,7 @@ use App\Http\Controllers\Cashier\PosController;
 use App\Http\Controllers\Cashier\CheckoutController;
 use App\Http\Controllers\Admin\SalesController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\UserController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -42,7 +43,9 @@ Route::middleware('auth')->group(function () {
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
-    
+
+    Route::resource('users', UserController::class)->only(['index', 'destroy']);
+
     Route::resource('product-types', ProductTypeController::class);
     Route::resource('categories', CategoryController::class);
     Route::resource('suppliers', SupplierController::class);

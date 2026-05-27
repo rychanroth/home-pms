@@ -65,8 +65,6 @@
                         No products found.
                     </p>
                 </div>
-
-                <!-- PRODUCT INFO DRAWER -->
                 <div x-show="selectedProduct"
                     x-transition:enter="transition ease-out duration-300"
                     x-transition:enter-start="opacity-0 -translate-x-full"
@@ -74,9 +72,9 @@
                     x-transition:leave="transition ease-in duration-200"
                     x-transition:leave-start="opacity-100 translate-x-0"
                     x-transition:leave-end="opacity-0 -translate-x-full"
-                    class="absolute inset-0 z-20 bg-white shadow-2xl p-6 overflow-y-auto flex flex-col">
+                    class="absolute inset-0 z-20 bg-white shadow-2xl flex flex-col h-full">
 
-                    <div class="flex justify-between items-center mb-6">
+                    <div class="flex justify-between items-center p-6 border-b shrink-0">
                         <h2 class="text-xl font-bold text-gray-800">Product Details</h2>
                         <button @click="selectedProduct = null" class="text-gray-400 hover:text-gray-600">
                             <x-heroicon-o-x-mark class="w-6 h-6" />
@@ -84,28 +82,34 @@
                     </div>
 
                     <template x-if="selectedProduct">
-                        <div class="flex-1">
-                            <img :src="selectedProduct.image ? '/storage/' + selectedProduct.image : 'https://via.placeholder.com/400'" class="w-full h-48 object-cover rounded-lg mb-4 bg-gray-100">
+                        <div class="flex flex-col flex-1 overflow-hidden">
 
-                            <h3 class="text-2xl font-bold text-gray-900" x-text="selectedProduct.name"></h3>
-                            <p class="text-sm text-gray-500 mb-4" x-text="selectedProduct.description || 'No description provided.'"></p>
+                            <div class="flex-1 overflow-y-auto p-6">
+                                <img :src="selectedProduct.image ? '/storage/' + selectedProduct.image : 'https://via.placeholder.com/400'" class="w-full h-48 object-cover rounded-lg mb-4 bg-gray-100">
 
-                            <div class="grid grid-cols-2 gap-4 mb-6">
-                                <div class="bg-gray-50 p-3 rounded">
-                                    <p class="text-xs text-gray-500">Price</p>
-                                    <p class="text-lg font-bold text-teal-700" x-text="'$' + parseFloat(selectedProduct.selling_price).toFixed(2)"></p>
-                                </div>
-                                <div class="bg-gray-50 p-3 rounded">
-                                    <p class="text-xs text-gray-500">In Stock</p>
-                                    <p class="text-lg font-bold" :class="selectedProduct.stock_quantity <= 5 ? 'text-red-600' : 'text-gray-900'" x-text="selectedProduct.stock_quantity + ' ' + selectedProduct.base_unit + 's'"></p>
+                                <h3 class="text-2xl font-bold text-gray-900" x-text="selectedProduct.name"></h3>
+                                <p class="text-sm text-gray-500 mb-4" x-text="selectedProduct.description || 'No description provided.'"></p>
+
+                                <div class="grid grid-cols-2 gap-4 mb-6">
+                                    <div class="bg-gray-50 p-3 rounded">
+                                        <p class="text-xs text-gray-500">Price</p>
+                                        <p class="text-lg font-bold text-teal-700" x-text="'$' + parseFloat(selectedProduct.selling_price).toFixed(2)"></p>
+                                    </div>
+                                    <div class="bg-gray-50 p-3 rounded">
+                                        <p class="text-xs text-gray-500">In Stock</p>
+                                        <p class="text-lg font-bold" :class="selectedProduct.stock_quantity <= 5 ? 'text-red-600' : 'text-gray-900'" x-text="selectedProduct.stock_quantity + ' ' + selectedProduct.base_unit + 's'"></p>
+                                    </div>
                                 </div>
                             </div>
 
-                            <button @click="addToCart(selectedProduct); selectedProduct = null;"
-                                :disabled="!selectedProduct.is_active"
-                                class="w-full bg-teal-600 text-white py-3 rounded-lg font-bold hover:bg-teal-700 disabled:bg-gray-400 disabled:cursor-not-allowed">
-                                Add to Cart
-                            </button>
+                            <div class="p-6 border-t bg-gray-50 shrink-0">
+                                <button @click="addToCart(selectedProduct); selectedProduct = null;"
+                                    :disabled="!selectedProduct.is_active"
+                                    class="w-full bg-teal-600 text-white py-3 rounded-lg font-bold hover:bg-teal-700 disabled:bg-gray-400 disabled:cursor-not-allowed">
+                                    Add to Cart
+                                </button>
+                            </div>
+
                         </div>
                     </template>
                 </div>
@@ -377,7 +381,7 @@
 
                 // New state variables
                 isCheckingOut: false,
-                showSuccess: false,
+                showcess: false,
                 lastSaleNumber: '',
 
                 selectedProduct: null, // Holds the product object for the drawer
@@ -515,9 +519,7 @@
 
                             if (data.success) {
                                 this.lastSaleNumber = data.sale_number;
-                                this.lastCartSnapshot = {
-                                    ...this.cart
-                                };
+                                this.lastCartSnapshot = JSON.parse(JSON.stringify(this.cart));
                                 this.showSuccess = true;
 
                                 // 1. Update stock in the UI grid instantly!

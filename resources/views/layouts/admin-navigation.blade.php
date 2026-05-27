@@ -6,7 +6,7 @@
         <a href="{{ route('admin.dashboard') }}" class="text-xl font-bold tracking-wider text-teal-400 flex items-center space-x-2">
             @php $logo = \App\Models\SiteSetting::get('site_logo'); @endphp
             @if($logo)
-            <img src="{{ Storage::url($logo) }}" class="h-8 w-20">
+            <img src="{{ Storage::url($logo) }}" class="h-[30px] w-[30px] object-contain">
             @else
             AETERNA
             @endif

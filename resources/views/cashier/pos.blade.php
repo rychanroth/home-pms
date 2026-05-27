@@ -74,40 +74,60 @@
                     x-transition:leave-end="opacity-0 -translate-x-full"
                     class="absolute inset-0 z-20 bg-white shadow-2xl flex flex-col h-full">
 
-                    <div class="flex justify-between items-center p-6 border-b shrink-0">
-                        <h2 class="text-xl font-bold text-gray-800">Product Details</h2>
-                        <button @click="selectedProduct = null" class="text-gray-400 hover:text-gray-600">
+                    <div class="flex justify-between items-center p-5 border-b bg-gray-50 shrink-0">
+                        <h2 class="text-xl font-bold text-gray-800 flex items-center gap-2">
+                            <x-heroicon-o-information-circle class="w-6 h-6 text-teal-600" />
+                            Product Details
+                        </h2>
+                        <button @click="selectedProduct = null" class="text-gray-400 hover:text-red-600 hover:bg-red-50 p-2 rounded-lg transition" aria-label="Close">
                             <x-heroicon-o-x-mark class="w-6 h-6" />
                         </button>
                     </div>
 
                     <template x-if="selectedProduct">
-                        <div class="flex flex-col flex-1 overflow-hidden">
+                        <div class="flex flex-row flex-1 overflow-hidden p-6 gap-6">
 
-                            <div class="flex-1 overflow-y-auto p-6">
-                                <img :src="selectedProduct.image ? '/storage/' + selectedProduct.image : 'https://via.placeholder.com/400'" class="w-full h-48 object-cover rounded-lg mb-4 bg-gray-100">
+                            <div class="w-2/5 flex flex-col gap-4">
+                                <div class="w-full aspect-[4/3] bg-white rounded-xl border border-gray-200 flex items-center justify-center p-2 overflow-hidden shrink-0 shadow-sm">
+                                    <img :src="selectedProduct.image ? '/storage/' + selectedProduct.image : 'https://via.placeholder.com/400'"
+                                        class="max-w-full max-h-full object-contain"
+                                        alt="Product Image">
+                                </div>
 
-                                <h3 class="text-2xl font-bold text-gray-900" x-text="selectedProduct.name"></h3>
-                                <p class="text-sm text-gray-500 mb-4" x-text="selectedProduct.description || 'No description provided.'"></p>
-
-                                <div class="grid grid-cols-2 gap-4 mb-6">
-                                    <div class="bg-gray-50 p-3 rounded">
-                                        <p class="text-xs text-gray-500">Price</p>
-                                        <p class="text-lg font-bold text-teal-700" x-text="'$' + parseFloat(selectedProduct.selling_price).toFixed(2)"></p>
-                                    </div>
-                                    <div class="bg-gray-50 p-3 rounded">
-                                        <p class="text-xs text-gray-500">In Stock</p>
-                                        <p class="text-lg font-bold" :class="selectedProduct.stock_quantity <= 5 ? 'text-red-600' : 'text-gray-900'" x-text="selectedProduct.stock_quantity + ' ' + selectedProduct.base_unit + 's'"></p>
-                                    </div>
+                                <div class="flex-1 overflow-y-auto pr-2">
+                                    <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Description</h4>
+                                    <p class="text-sm text-gray-600 leading-relaxed" x-text="selectedProduct.description || 'No detailed description available.'"></p>
                                 </div>
                             </div>
 
-                            <div class="p-6 border-t bg-gray-50 shrink-0">
+                            <div class="flex-1 flex flex-col justify-between">
+
+                                <div>
+                                    <div class="mb-6">
+                                        <h3 class="text-3xl font-bold text-gray-900 leading-tight" x-text="selectedProduct.name"></h3>
+                                        <p class="text-sm text-gray-400 mt-1 uppercase tracking-wider font-mono" x-text="'Ref: #' + selectedProduct.id"></p>
+                                    </div>
+
+                                    <div class="flex flex-col gap-3">
+                                        <div class="bg-teal-50 border border-teal-100 p-4 rounded-xl flex justify-between items-center shadow-sm">
+                                            <span class="text-sm font-bold text-teal-800 uppercase">Unit Price</span>
+                                            <span class="text-3xl font-extrabold text-teal-700" x-text="'$' + parseFloat(selectedProduct.selling_price).toFixed(2)"></span>
+                                        </div>
+
+                                        <div class="bg-gray-50 border border-gray-200 p-4 rounded-xl flex justify-between items-center shadow-sm">
+                                            <span class="text-sm font-bold text-gray-600 uppercase">Available Stock</span>
+                                            <span class="text-2xl font-bold" :class="selectedProduct.stock_quantity <= 5 ? 'text-red-600' : 'text-gray-900'" x-text="selectedProduct.stock_quantity + ' ' + selectedProduct.base_unit + 's'"></span>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <button @click="addToCart(selectedProduct); selectedProduct = null;"
                                     :disabled="!selectedProduct.is_active"
-                                    class="w-full bg-teal-600 text-white py-3 rounded-lg font-bold hover:bg-teal-700 disabled:bg-gray-400 disabled:cursor-not-allowed">
-                                    Add to Cart
+                                    class="w-full bg-teal-600 text-white py-5 rounded-xl font-extrabold text-xl hover:bg-teal-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition flex items-center justify-center space-x-2 shadow-lg shadow-teal-600/20 active:scale-[0.98]">
+                                    <x-heroicon-o-shopping-cart class="w-6 h-6" />
+                                    <span>Add to Cart</span>
                                 </button>
+
                             </div>
 
                         </div>

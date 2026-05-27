@@ -15,6 +15,7 @@ class SettingController extends Controller
         return view('admin.settings.index', [
             'site_name' => SiteSetting::get('site_name', 'Aeterna Pharmacy'),
             'site_logo' => SiteSetting::get('site_logo'),
+            // 'support_email' => SiteSetting::get('support_email', 'support@dummy.com'),
         ]);
     }
 
@@ -23,10 +24,12 @@ class SettingController extends Controller
         $request->validate([
             'site_name' => 'required|string|max:255',
             'site_logo' => 'nullable|image|max:2048',
+            // 'support_email' => 'required|email|max:255',
         ]);
 
         // Save Text
         SiteSetting::set('site_name', $request->site_name);
+        // SiteSetting::set('support_email', $request->support_email);
 
         // Save Image
         if ($request->hasFile('site_logo')) {

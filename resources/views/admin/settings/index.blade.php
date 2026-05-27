@@ -1,7 +1,7 @@
 <x-app-layout>
     <div class="max-w-2xl mx-auto p-4 sm:p-6 lg:p-8">
         <h2 class="text-2xl font-bold mb-6">Site Settings</h2>
-
+        <!-- <p class="text-2xl font-bold mb-6">{{ $support_email }}</p> -->
         @if(session('success'))
             <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4">{{ session('success') }}</div>
         @endif
@@ -13,6 +13,11 @@
                 <label class="block text-sm font-medium text-gray-700">Pharmacy Name</label>
                 <input type="text" name="site_name" value="{{ $site_name }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-teal-500 focus:border-teal-500">
             </div>
+
+            <!-- <div>
+                <label class="block text-sm font-medium text-gray-700">Support Email</label>
+                <input type="email" name="support_email" value="{{ $support_email }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-teal-500 focus:border-teal-500">
+            </div> -->
 
             <div>
                 <label class="block text-sm font-medium text-gray-700">Pharmacy Logo</label>

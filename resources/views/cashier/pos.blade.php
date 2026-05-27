@@ -307,15 +307,23 @@
             x-transition:enter-start="opacity-0 translate-y-4"
             x-transition:enter-end="opacity-100 translate-y-0"
             class="fixed bottom-6 right-6 bg-green-500 text-white px-6 py-4 rounded-lg shadow-xl z-50">
-            <div class="flex items-center space-x-4">
-                <div>
+
+            <div class="flex items-center justify-between">
+                <div class="mr-6">
                     <p class="font-bold">Sale Completed!</p>
                     <p class="text-sm text-green-100" x-text="'Receipt #: ' + lastSaleNumber"></p>
                 </div>
-                <button @click="printReceipt()" class="bg-green-600 hover:bg-green-700 px-3 py-2 rounded text-sm font-bold flex items-center space-x-1">
-                    <x-heroicon-o-printer class="w-4 h-4" />
-                    <span>Print</span>
-                </button>
+
+                <div class="flex items-center space-x-2 border-l border-green-600 pl-4">
+                    <button @click="printReceipt()" class="bg-green-600 hover:bg-green-700 px-3 py-2 rounded text-sm font-bold flex items-center space-x-1 transition">
+                        <x-heroicon-o-printer class="w-4 h-4" />
+                        <span>Print</span>
+                    </button>
+
+                    <button @click="showSuccess = false" class="text-green-100 hover:text-white p-2 rounded-lg hover:bg-green-600 transition" aria-label="Close">
+                        <x-heroicon-o-x-mark class="w-5 h-5" />
+                    </button>
+                </div>
             </div>
         </div>
     </div>

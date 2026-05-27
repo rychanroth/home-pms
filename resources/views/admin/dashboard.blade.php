@@ -21,48 +21,49 @@
 
     <div class="w-full h-1 mt-2 mb-4 bg-gray-200"></div>
 
-    <div class="grid grid-cols-2 gap-4 mb-4">
-        <!-- Estimated Profit Card -->
-        <div class="bg-white rounded-lg shadow-sm p-6 border-l-4 border-emerald-500">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-sm font-medium text-gray-500">Est. Profit</p>
-                    <p class="text-3xl font-bold text-gray-900 mt-1">${{ number_format($estimatedProfit, 2) }}</p>
-                    <p class="text-xs text-gray-400 mt-1">*Based on last known cost</p>
-                </div>
-                <div class="p-3 bg-emerald-50 rounded-full"><x-heroicon-o-arrow-trending-up class="w-6 h-6 text-emerald-600" /></div>
-            </div>
-        </div>
-        <!-- Total Revenue Card -->
-        <div class="bg-white rounded-lg shadow-sm p-6 border-l-4 border-teal-500">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-sm font-medium text-gray-500">Total Revenue</p>
-                    <p class="text-3xl font-bold text-gray-900 mt-1">${{ number_format($totalRevenue, 2) }}</p>
-                </div>
-                <div class="p-3 bg-teal-50 rounded-full"><x-heroicon-o-banknotes class="w-6 h-6 text-teal-600" /></div>
-            </div>
-        </div>
-    </div>
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4 items-stretch">
 
-    <!-- Add Top 5 List below your Recent Sales/Low Stock Grid -->
-    <div class="bg-white mb-4 rounded-lg shadow-sm p-6 lg:col-span-2">
-        <h2 class="text-lg font-bold text-gray-800 mb-4">Top 5 Best Sellers</h2>
-        <div class="space-y-3">
-            @forelse($topProducts as $index => $topItem)
-            <div class="flex items-center justify-between p-3 bg-blue-50 rounded-lg border border-blue-100">
-                <div class="flex items-center space-x-3">
-                    <span class="text-sm font-bold text-blue-600 w-6">#{{ $index + 1 }}</span>
-                    <span class="text-sm font-medium text-gray-800">{{ $topItem->product->name }}</span>
+        <div class="flex flex-col gap-4">
+            <div class="bg-white rounded-lg shadow-sm p-6 border-l-4 border-emerald-500 flex-1 flex flex-col justify-center">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">Est. Profit</p>
+                        <p class="text-3xl font-bold text-gray-900 mt-1">${{ number_format($estimatedProfit, 2) }}</p>
+                        <p class="text-xs text-gray-400 mt-1">*Based on last known cost</p>
+                    </div>
+                    <div class="p-3 bg-emerald-50 rounded-full"><x-heroicon-o-arrow-trending-up class="w-6 h-6 text-emerald-600" /></div>
                 </div>
-                <span class="text-sm font-bold text-blue-800">{{ $topItem->total_sold }} sold</span>
             </div>
-            @empty
-            <p class="text-sm text-gray-500 text-center py-4">No sales data yet.</p>
-            @endforelse
-        </div>
-    </div>
 
+            <div class="bg-white rounded-lg shadow-sm p-6 border-l-4 border-teal-500 flex-1 flex flex-col justify-center">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">Total Revenue</p>
+                        <p class="text-3xl font-bold text-gray-900 mt-1">${{ number_format($totalRevenue, 2) }}</p>
+                    </div>
+                    <div class="p-3 bg-teal-50 rounded-full"><x-heroicon-o-banknotes class="w-6 h-6 text-teal-600" /></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-sm p-6 lg:col-span-2 flex flex-col h-full">
+            <h2 class="text-lg font-bold text-gray-800 mb-4">Top 5 Best Sellers</h2>
+            <div class="space-y-3 flex-1">
+                @forelse($topProducts as $index => $topItem)
+                <div class="flex items-center justify-between p-3 bg-blue-50 rounded-lg border border-blue-100">
+                    <div class="flex items-center space-x-3">
+                        <span class="text-sm font-bold text-blue-600 w-6">#{{ $index + 1 }}</span>
+                        <span class="text-sm font-medium text-gray-800">{{ $topItem->product->name }}</span>
+                    </div>
+                    <span class="text-sm font-bold text-blue-800">{{ $topItem->total_sold }} sold</span>
+                </div>
+                @empty
+                <p class="text-sm text-gray-500 text-center py-4">No sales data yet.</p>
+                @endforelse
+            </div>
+        </div>
+
+    </div>
     <!-- Summary Cards -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
 

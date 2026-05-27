@@ -1,4 +1,4 @@
-<nav x-data="{ sidebarOpen: false }" class="bg-slate-800 text-slate-100 w-full md:w-64 md:min-h-screen flex-shrink-0">
+<nav x-data="{ sidebarOpen: false }" class="bg-green-950 text-slate-100 w-full md:w-64 md:min-h-screen flex-shrink-0">
 
     <!-- Top Section: Logo & Mobile Toggle -->
     <div class="flex items-center justify-between h-16 px-4 bg-slate-900">

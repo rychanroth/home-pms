@@ -30,20 +30,6 @@
             <span>Dashboard</span>
         </a>
 
-        <a href="{{ route('admin.users.index') }}"
-            class="flex items-center space-x-3 px-2 py-2 rounded-md text-sm transition-colors 
-        {{ request()->routeIs('admin.users.*') ? 'bg-teal-600 text-white' : 'text-slate-300 hover:bg-slate-700 hover:text-white' }}">
-            <x-heroicon-o-user class="w-5 h-5" />
-            <span>Users</span>
-        </a>
-
-        <a href="{{ route('admin.settings.index') }}"
-            class="flex items-center space-x-3 px-2 py-2 rounded-md text-sm transition-colors 
-        {{ request()->routeIs('admin.settings.*') ? 'bg-teal-600 text-white' : 'text-slate-300 hover:bg-slate-700 hover:text-white' }}">
-            <x-heroicon-o-wrench-screwdriver class="w-5 h-5" />
-            <span>Settings</span>
-        </a>
-
         <a href="{{ route('admin.product-types.index') }}"
             class="flex items-center space-x-3 px-2 py-2 rounded-md text-sm transition-colors 
         {{ request()->routeIs('admin.product-types.*') ? 'bg-teal-600 text-white' : 'text-slate-300 hover:bg-slate-700 hover:text-white' }}">
@@ -113,5 +99,22 @@
                 </button>
             </form>
         </div>
+
+
+        <p class="px-2 pt-6 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Site Management</p>
+
+        <a href="{{ route('admin.users.index') }}"
+            class="flex items-center space-x-3 px-2 py-2 rounded-md text-sm transition-colors 
+        {{ request()->routeIs('admin.users.*') ? 'bg-teal-600 text-white' : 'text-slate-300 hover:bg-slate-700 hover:text-white' }}">
+            <x-heroicon-o-user class="w-5 h-5" />
+            <span>Users</span>
+        </a>
+
+        <a href="{{ route('admin.settings.index') }}"
+            class="flex items-center space-x-3 px-2 py-2 rounded-md text-sm transition-colors 
+        {{ request()->routeIs('admin.settings.*') ? 'bg-teal-600 text-white' : 'text-slate-300 hover:bg-slate-700 hover:text-white' }}">
+            <x-heroicon-o-wrench-screwdriver class="w-5 h-5" />
+            <span>Settings</span>
+        </a>
     </div>
 </nav>

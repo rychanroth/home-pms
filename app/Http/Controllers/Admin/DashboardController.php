@@ -54,7 +54,7 @@ class DashboardController extends Controller
 
         // 5. DRY Low Stock Logic (Write query once, use twice)
         $lowStockQuery = Product::where('stock_quantity', '<=', 5)
-            ->where('stock_quantity', '>', 0)
+            ->where('stock_quantity', '>=', 0)
             ->where('is_active', true);
             
         $lowStockCount = (clone $lowStockQuery)->count();

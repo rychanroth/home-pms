@@ -40,7 +40,7 @@ class ProductScope implements Scope
         // 4. Filter by Stock Status
         if (isset($filters['stock_status']) && $filters['stock_status'] !== '') {
             if ($filters['stock_status'] === 'low_stock') {
-                $query->whereBetween('stock_quantity', [1, 5]);
+                $query->whereBetween('stock_quantity', [0, 5]);
             } elseif ($filters['stock_status'] === 'out_of_stock') {
                 $query->where('stock_quantity', 0);
             } elseif ($filters['stock_status'] === 'in_stock') {
